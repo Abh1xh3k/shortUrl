@@ -2,23 +2,23 @@ const express = require("express");
 const app = express();
 const { connectMongo } = require('./connect')
 const urlRoutes = require('./routes/url')
+const path = require('path');
+
 const PORT = 8001;
 const URL = require("./models/url");
 
 connectMongo('mongodb://127.0.0.1:27017/shortUrl').then(() => console.log("mongodb connected"))
 app.use(express.json());
+app.set("view engine","ejs");
+
+app.set('views' , path.resolve('./views'));
 app.use("/url", urlRoutes)
 app.get('/test' ,async(req,res)=>{
   const allUrl= await URL.find({});
-  return res.end(`<html>
-    <head></head>
-    <body>
-    <ol>
-    ${allUrl.map(url=>`<li>${url.shortId} - ${url.redirecturl} - ${url.visitHistory.length}</li>`).join('')}
-    </ol>
-    </body>
-    </html>`);
+  return res.render('home')
 })
+
+
 app.get('/:shortId', async (req, res) => {
   try {
     const shortId = req.params.shortId;
