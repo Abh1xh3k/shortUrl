@@ -5,10 +5,19 @@ const URL = require('../models/url');  // Adjust the path according to your fold
 
 
 router.get('/' ,async (req,res)=>{
-    const allUrl= await URL.find({});
+    if(!req.user) return res.redirect('/login')
+    const allUrl= await URL.find({ createdBy: req.user._id});
     return res.render("home",{
         urls:allUrl,
     })
    }
 )
+router.get('/signup', (req,res)=>{
+    return res.render("signup");
+})
+router.get('/login', (req,res)=>{
+    return res.render("Login");
+})
+
+
 module.exports=router

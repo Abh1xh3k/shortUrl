@@ -5,14 +5,14 @@ async function handleGenerateNewShortUrl(req, res) {
     try {
 
         const body = req.body;
-        // console.log(body);
-        // return res.json(req.body);
-        if (!body.URL) return res.status(400).json({ error: 'url is required' });
+        
+        if (!body.url) return res.status(400).json({ error: 'url is required' });
         const shortID = shortid();
         await URL.create({
             shortId: shortID,
-            redirecturl: body.URL,
+            redirecturl: body.url,
             visitedHistory: [],
+            createdBy:req.user._id,   // req.user is coming from middleware 
         })
         return res.render('home',{
             id:shortID,

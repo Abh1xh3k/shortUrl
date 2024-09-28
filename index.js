@@ -4,24 +4,32 @@ const { connectMongo } = require('./connect')
 const urlRoutes = require('./routes/url')
 const path = require('path');
 const staticRoute=require('./routes/staticRouter')
-
+const userRoutes=require('./routes/user')
 const PORT = 8001;
 const URL = require("./models/url");
+const cookieParser=require('cookie-parser')
+
+const {restrictToLoggedinUserOnly,checkAuth}=require('./middlewares/auth')
 
 connectMongo('mongodb://127.0.0.1:27017/shortUrl').then(() => console.log("mongodb connected"))
-app.use(express.json());
-app.use(express.urlencoded({extended:false}))  //for supporting form data
 app.set("view engine","ejs");
 
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({extended:true}))  //for supporting form data
 app.set('views' , path.resolve('./views'));
-app.use("/url", urlRoutes)
+app.use("/url", restrictToLoggedinUserOnly,urlRoutes)
 app.get('/test' ,async(req,res)=>{
   const allUrl= await URL.find({});
+  console.log(Array.from(allUrl))
   return res.render('home',{
     urls:allUrl,   ////passing variable in ejs
   })
 })
-app.use('/', staticRoute)
+app.use('/', checkAuth, staticRoute)
+app.use('/user',userRoutes)
+
+
 
 
 app.get('/:shortId', async (req, res) => {
@@ -31,9 +39,6 @@ app.get('/:shortId', async (req, res) => {
     const entry = await URL.findOne({
       shortId
     });
-    // entry.save()
-    // console.log(entry);
-    // return res.json(entry);
     if (entry?.redirecturl) {
       
       entry?.visitHistory.push( Date.now() )
