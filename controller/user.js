@@ -8,7 +8,7 @@ async function handleuserSignup(req,res){
     email,
     password,
  })
- return res.render("/");
+ return res.redirect("/login");
 }
 async function handleuserLogin(req,res){
     const {email,password}=req.body;
@@ -17,9 +17,9 @@ async function handleuserLogin(req,res){
          return res.render("login",{
         error:"Invalid Username or password",
      });
-     const sessionId=uuidv4();
-     setUser(sessionId,user);
-     res.cookie('uid', sessionId)
+   //   const sessionId=uuidv4();
+      const token =setUser(user);
+     res.cookie('uid', token)
     return res.redirect('/');
    }
-module.exports={handleuserSignup, handleuserLogin}
+module.exports={handleuserSignup,handleuserLogin}

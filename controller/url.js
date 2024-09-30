@@ -5,6 +5,7 @@ async function handleGenerateNewShortUrl(req, res) {
     try {
 
         const body = req.body;
+        // console.log(body.url);
         
         if (!body.url) return res.status(400).json({ error: 'url is required' });
         const shortID = shortid();
