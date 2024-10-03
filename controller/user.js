@@ -19,7 +19,7 @@ async function handleuserLogin(req,res){
      });
    //   const sessionId=uuidv4();
       const token =setUser(user);
-     res.cookie('uid', token)
-    return res.redirect('/');
+   //   res.cookie('uid', token)
+    return res.json({token:token});
    }
 module.exports={handleuserSignup,handleuserLogin}
